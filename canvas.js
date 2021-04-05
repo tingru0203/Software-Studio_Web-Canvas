@@ -1,20 +1,21 @@
-let down;
+let down, fill;
 let step = -1;
 let history = [];
+let last_shape;
 let last_mouseX, last_mouseY;
 let mouseX, mouseY;
 let textX, textY;
 var hue = 0;
-let last_shape;
-let fill;
 
 /* pen: 1, eraser: 2, text: 3, 
     rectangle:4, triangle: 5, circle: 6,
-    rainbow pen: 7, line:8 */
-let id = ["pen", "eraser", "text", "rectangle", 
-        "triangle", "circle", "rainbow", "line"];
+    rainbow pen: 7, line: 8 */
+let id = ["pen", "eraser", "text", "rectangle", "rectangle-fill",
+        "triangle", "triangle-fill", "circle", "circle-fill", 
+        "rainbow", "line", "dash-line"];
 let myfunc = 0;
 
+/* init */
 const canvas = document.getElementById("canvas");
 const context = canvas.getContext("2d");
 context.lineWidth = 5;
@@ -22,41 +23,27 @@ context.strokeStyle = "black";
 context.lineJoin = 'round';
 context.lineCap = 'round';
 
+/* mouse event */
 function mousedown(event) {
     if (step == -1)
         save();
 
     switch(myfunc) {
         case 1: //pen
-            last_mouseX = mouseX;
-            last_mouseY = mouseY;
-            mouseX = event.offsetX;
-            mouseY = event.offsetY;
-            down = true;
-            break;
         case 2: //eraser
-            last_mouseX = mouseX;
-            last_mouseY = mouseY;
-            mouseX = event.offsetX;
-            mouseY = event.offsetY;
+        case 7: //rainbow
+            [last_mouseX, last_mouseY] = [mouseX, mouseY];
+            [mouseX, mouseY] = [event.offsetX, event.offsetY];
             down = true;
             break;
         case 3: //text
             var left = document.getElementById('left');
             var textarea = document.getElementById('textarea');
-            if(textarea != null) {
-                var style = document.getElementById("font-style").value;
-                var size = document.getElementById("font-size").value;
-                context.font = size + "px " + style;
-                textValue = textarea.value;
-                left.removeChild(textarea);
-
-                console.log(textX, textY);
-                context.fillText(textValue, textX, textY+size/2);    
-            }
-            else {
+            if(textarea == null) { // create textarea
+                // record text's position
                 textX = event.offsetX;
                 textY = event.offsetY;
+
                 var textarea = document.createElement('textarea');
                 textarea.id = "textarea";
                 textarea.cols = "10";
@@ -65,62 +52,38 @@ function mousedown(event) {
                 textarea.style.left = event.clientX + "px";
                 textarea.style.top = event.clientY + "px";
                 left.appendChild(textarea);
+            }
+            else { // write on canvas
+                // take font's value
+                var style = document.getElementById("font-style").value;
+                var size = document.getElementById("font-size").value;
+                context.font = size + "px " + style;
+
+                var textValue = textarea.value;
+                left.removeChild(textarea);
+                context.fillText(textValue, textX, textY+size/2);    
             } 
             break;
         case 4: //rectangle
-            last_mouseX = mouseX;
-            last_mouseY = mouseY;
-            mouseX = event.offsetX;
-            mouseY = event.offsetY;
-            down = true;
-
-            last_shape = canvas.toDataURL();
-            break;
         case 5: //triangle
-            last_mouseX = mouseX;
-            last_mouseY = mouseY;
-            mouseX = event.offsetX;
-            mouseY = event.offsetY;
-            down = true;
-
-            last_shape = canvas.toDataURL();
-            break;
         case 6: //circle
-            last_mouseX = mouseX;
-            last_mouseY = mouseY;
-            mouseX = event.offsetX;
-            mouseY = event.offsetY;
-            down = true;
-
-            last_shape = canvas.toDataURL();
-            break;
-        case 7: //rainbow
-            last_mouseX = mouseX;
-            last_mouseY = mouseY;
-            mouseX = event.offsetX;
-            mouseY = event.offsetY;
-            down = true;
-            break;
         case 8: //line
-            last_mouseX = mouseX;
-            last_mouseY = mouseY;
-            mouseX = event.offsetX;
-            mouseY = event.offsetY;
+            [last_mouseX, last_mouseY] = [mouseX, mouseY];
+            [mouseX, mouseY] = [event.offsetX, event.offsetY];
             down = true;
 
             last_shape = canvas.toDataURL();
             break;
-
     }
 }
 
 function mousemove(event) {
     switch(myfunc) {
         case 1: //pen
-            last_mouseX = mouseX;
-            last_mouseY = mouseY;
-            mouseX = event.offsetX;
-            mouseY = event.offsetY;
+        case 2: //eraser
+            [last_mouseX, last_mouseY] = [mouseX, mouseY];
+            [mouseX, mouseY] = [event.offsetX, event.offsetY];
+
             if(down) {
                 context.beginPath();
                 context.moveTo(last_mouseX, last_mouseY);
@@ -128,23 +91,17 @@ function mousemove(event) {
                 context.stroke();
             }
             break;
-        case 2: //eraser
-            if(down)
-                context.clearRect(event.offsetX, event.offsetY, context.lineWidth, context.lineWidth);
-            break;
-        case 3: //text
-            break;
         case 4: //rectangle
-            mouseX = event.offsetX;
-            mouseY = event.offsetY;
+            [mouseX, mouseY] = [event.offsetX, event.offsetY];
 
             if(down) {
-                let canvaspic = new Image(); //建立新的 Image
-                canvaspic.src = last_shape; //載入剛剛存放的影像
+                let canvaspic = new Image();
+                canvaspic.src = last_shape;
                 canvaspic.onload = function() {
+                    // undo
                     context.clearRect(0, 0, canvas.width, canvas.height);
-                    context.drawImage(canvaspic, 0, 0) //匯出影像並從座標 x:0 y:0 開始
-            
+                    context.drawImage(canvaspic, 0, 0);
+                    // draw
                     if(fill)
                         context.fillRect(last_mouseX, last_mouseY, mouseX-last_mouseX, mouseY-last_mouseY);
                     else {
@@ -156,75 +113,70 @@ function mousemove(event) {
             }
             break;
         case 5: //triangle
-            mouseX = event.offsetX;
-            mouseY = event.offsetY;
+            [mouseX, mouseY] = [event.offsetX, event.offsetY];
 
             if(down) {
-                let canvaspic = new Image(); //建立新的 Image
-                canvaspic.src = last_shape; //載入剛剛存放的影像
+                let canvaspic = new Image();
+                canvaspic.src = last_shape;
                 canvaspic.onload = function() {
+                    // undo
                     context.clearRect(0, 0, canvas.width, canvas.height);
-                    context.drawImage(canvaspic, 0, 0) //匯出影像並從座標 x:0 y:0 開始
-
+                    context.drawImage(canvaspic, 0, 0);
+                    // draw
                     context.beginPath();
                     context.moveTo(last_mouseX, last_mouseY);
                     context.lineTo(mouseX, last_mouseY);
                     context.lineTo((last_mouseX + mouseX)/2, mouseY);
                     context.lineTo(last_mouseX, last_mouseY);
-                    if(fill)
-                        context.fill();
-                    else
-                        context.stroke();
+                    if(fill) context.fill();
+                    else context.stroke();
                 }
             }
             break;
         case 6: //circle
-            mouseX = event.offsetX;
-            mouseY = event.offsetY;
+            [mouseX, mouseY] = [event.offsetX, event.offsetY];
 
             if(down) {
-                let canvaspic = new Image(); //建立新的 Image
-                canvaspic.src = last_shape; //載入剛剛存放的影像
+                let canvaspic = new Image();
+                canvaspic.src = last_shape;
                 canvaspic.onload = function() {
+                    // undo
                     context.clearRect(0, 0, canvas.width, canvas.height);
-                    context.drawImage(canvaspic, 0, 0) //匯出影像並從座標 x:0 y:0 開始
-
+                    context.drawImage(canvaspic, 0, 0);
+                    // draw
                     context.beginPath();
                     var dis = Math.sqrt((mouseX-last_mouseX)*(mouseX-last_mouseX)+(mouseY-last_mouseY)*(mouseY-last_mouseY));
                     context.arc(last_mouseX, last_mouseY, dis, 0, 2 * Math.PI);
-                    if(fill)
-                        context.fill();
-                    else
-                        context.stroke();
+                    if(fill) context.fill();
+                    else context.stroke();
                 }
             }
             break;
         case 7: //rainbow
+            [last_mouseX, last_mouseY] = [mouseX, mouseY];
+            [mouseX, mouseY] = [event.offsetX, event.offsetY];
+
             if(down) {
                 context.strokeStyle = `hsl(${hue},100%,50%)`;
                 context.beginPath();
                 context.moveTo(last_mouseX, last_mouseY);
                 context.lineTo(event.offsetX, event.offsetY);
                 context.stroke();
-                [last_mouseX, last_mouseY] = [event.offsetX, event.offsetY];
-                context.closePath();
-                if(hue <= 360)
-                    hue++;
-                else
-                    hue = 0;
+                if(hue <= 360) hue++;
+                else hue = 0;
             }     
             break;
         case 8: //line
-            mouseX = event.offsetX;
-            mouseY = event.offsetY;
+            [mouseX, mouseY] = [event.offsetX, event.offsetY];
 
             if(down) {
-                let canvaspic = new Image(); //建立新的 Image
-                canvaspic.src = last_shape; //載入剛剛存放的影像
+                let canvaspic = new Image();
+                canvaspic.src = last_shape;
                 canvaspic.onload = function() {
+                    // undo
                     context.clearRect(0, 0, canvas.width, canvas.height);
-                    context.drawImage(canvaspic, 0, 0) //匯出影像並從座標 x:0 y:0 開始
-
+                    context.drawImage(canvaspic, 0, 0);
+                    // draw
                     context.beginPath();
                     context.moveTo(last_mouseX, last_mouseY);
                     context.lineTo(mouseX, mouseY);
@@ -242,6 +194,7 @@ function mouseup() {
 
 /* select function */
 function pen() {
+    penColor();
     canvas.style.cursor = "url(./image/pencil.svg) 0 16, auto";
     myfunc = 1;
     func_change("pen");
@@ -260,6 +213,7 @@ function text() {
 }
 
 function rectangle(f) {
+    penColor();
     myfunc = 4;
     if(f) {
         fill = 1;
@@ -274,6 +228,7 @@ function rectangle(f) {
 } 
 
 function triangle(f) {
+    penColor();
     myfunc = 5;
     if(f) {
         fill = 1;
@@ -288,6 +243,7 @@ function triangle(f) {
 }
 
 function circle(f) {
+    penColor();
     myfunc = 6;
     if(f) {
         fill = 1;
@@ -307,10 +263,17 @@ function rainbow() {
     func_change("rainbow");
 }
 
-function line() {
-    canvas.style.cursor = "url(./image/line.svg) 0 16, auto";
+function line(s) {
+    penColor();
     myfunc = 8;
-    func_change("line");
+    if(s) { // line
+        canvas.style.cursor = "url(./image/line.svg) 0 16, auto";
+        func_change("line");
+    }
+    else { //dash line
+        canvas.style.cursor = "url(./image/dash-line.svg) 0 16, auto";
+        func_change("dash-line");
+    }
 }
 
 function Size() {
@@ -321,44 +284,38 @@ function Size() {
 function penColor() {
     var color = document.getElementById("myColor");
     context.strokeStyle = color.value;
+    context.fillStyle = color.value;
 }
 
 function save() {
     step++;
     if (step < history.length) 
         history.length = step;
-    history.push(canvas.toDataURL()); //當前影像存成 Base64 編碼的字串並放入陣列
+    history.push(canvas.toDataURL());
     console.log("save "+step);
 }
 
 function undo() {
     if (step > 0) {
         step--;
-        let canvaspic = new Image(); //建立新的 Image
-        canvaspic.src = history[step]; //載入剛剛存放的影像
+        let canvaspic = new Image();
+        canvaspic.src = history[step];
         canvaspic.onload = function() {
             context.clearRect(0, 0, canvas.width, canvas.height);
-            context.drawImage(canvaspic, 0, 0) //匯出影像並從座標 x:0 y:0 開始
+            context.drawImage(canvaspic, 0, 0);
         }
     }
-    //最後這邊是讓上一步下一步可以在不能使用時顯示灰色及更改鼠標，可以不加
-    /*if (step < history.length && step > 0) {
-        $('next-step').removeClass('disable-btn');
-    }*/
 }
 
 function redo() {
     if (step < history.length - 1) {
         step++;
-        const canvaspic = new Image(); //建立新的 Image
-        canvaspic.src = history[step]; //載入剛剛存放的影像
+        const canvaspic = new Image(); 
+        canvaspic.src = history[step]; 
         canvaspic.onload = function() {
             context.clearRect(0, 0, canvas.width, canvas.height);
-            context.drawImage(canvaspic, 0, 0) //匯出影像並從座標 x:0 y:0 開始
+            context.drawImage(canvaspic, 0, 0);
         }
-        /*if (step === history.length - 1) {
-            $('.next-step').addClass('disable-btn');
-        }*/
     }
 }
 
@@ -375,10 +332,11 @@ function Upload(th) {
     var src = URL.createObjectURL(file);
     
     img.src = src;
-    
     img.onload = function () {
         context.drawImage(img, 0, 0);
         URL.revokeObjectURL(src);
+
+        save();
     }
 }
 
@@ -389,23 +347,33 @@ function Clean() {
 }
 
 function func_change(changeId) {
-    for (i = 0; i < id.length; i++){
-        if (id[i] == changeId){
-            document.getElementById(id[i]).style['border'] = "blue 3px solid";
+    for (i = 0; i < id.length; i++) {
+        var func = document.getElementById(id[i]);
+        if(changeId == "eraser")
+            context.globalCompositeOperation = "destination-out";
+        else
+            context.globalCompositeOperation = "source-over";
+
+        if(changeId == "dash-line")
+            context.setLineDash([10, 10]);
+        else
+            context.setLineDash([]);
+
+        if (id[i] == changeId){ //select
+            func.style['border'] = "black 3px solid";
+            func.style['background'] = "rgb(185, 185, 185)";
+            func.style['color'] = "rgb(54, 54, 54)";
         }
-        else{
-            document.getElementById(id[i]).style['border'] = "none";
+        else{ //origin
+            func.style['border'] = "none";
+            func.style['background'] = "#757575";
+            func.style['color'] = "white";
         }
     }
 }
 
-canvas.addEventListener('mousemove', function (event) {
-    mousemove(event)
-}, false);
-canvas.addEventListener('mousedown', function (event) {
-    mousedown(event)
-}, false);
-canvas.addEventListener('mouseup', function (event) {
-    mouseup(event)
-}, false);
+/* listen event */
+canvas.addEventListener('mousemove', mousemove);
+canvas.addEventListener('mousedown', mousedown);
+canvas.addEventListener('mouseup', mouseup);
 
