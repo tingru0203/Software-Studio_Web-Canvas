@@ -12,7 +12,7 @@ var hue = 0;
     rainbow pen: 7, line: 8 */
 let id = ["pen", "eraser", "text", "rectangle", "rectangle-fill",
         "triangle", "triangle-fill", "circle", "circle-fill", 
-        "rainbow", "line", "dash-line"];
+        "rainbow", "line", "dash-line", "hexagon", "hexagon-fill"];
 let myfunc = 0;
 
 /* init */
@@ -68,6 +68,7 @@ function mousedown(event) {
         case 5: //triangle
         case 6: //circle
         case 8: //line
+        case 9:
             [last_mouseX, last_mouseY] = [mouseX, mouseY];
             [mouseX, mouseY] = [event.offsetX, event.offsetY];
             down = true;
@@ -184,6 +185,33 @@ function mousemove(event) {
                 }
             }
             break;
+        case 9: //hexagon
+            [mouseX, mouseY] = [event.offsetX, event.offsetY];
+
+            if(down) {
+                let canvaspic = new Image();
+                canvaspic.src = last_shape;
+                canvaspic.onload = function() {
+                    // undo
+                    context.clearRect(0, 0, canvas.width, canvas.height);
+                    context.drawImage(canvaspic, 0, 0);
+                    // draw
+                    var S = (mouseY-last_mouseY)/4;
+                    var L = S*Math.sqrt(3);
+                    context.beginPath();
+                    context.moveTo(last_mouseX, last_mouseY);
+                    context.lineTo(last_mouseX+L, last_mouseY+S);
+                    context.lineTo(last_mouseX+L, mouseY-S);
+                    context.lineTo(last_mouseX, mouseY);
+                    context.lineTo(last_mouseX-L, mouseY-S);
+                    context.lineTo(last_mouseX-L, last_mouseY+S);
+                    context.lineTo(last_mouseX, last_mouseY);
+                    if(fill) context.fill();
+                    else context.stroke();
+                }
+            }
+
+            break;
     }
 }
 
@@ -273,6 +301,21 @@ function line(s) {
     else { //dash line
         canvas.style.cursor = "url(./image/dash-line.svg) 0 16, auto";
         func_change("dash-line");
+    }
+}
+
+function hexagon(f) {
+    penColor();
+    myfunc = 9;
+    if(f) {
+        fill = 1;
+        func_change("hexagon-fill");
+        canvas.style.cursor = "url(./image/hexagon-fill.svg) 0 16, auto";
+    }
+    else {
+        fill = 0;
+        func_change("hexagon");
+        canvas.style.cursor = "url(./image/hexagon.svg) 0 16, auto";
     }
 }
 
