@@ -26,17 +26,35 @@
 ---
 
 ### How to use 
+Describe how to use your web and maybe insert images to help you explain.
 
-    Describe how to use your web and maybe insert images to help you explain.
+* pen
+* eraser
+* text input
+* rectangle (hollow/fill)
+* triangle (hollow/fill)
+* circle (hollow/fill)
+* undo
+* redo
+* reset canvas
+* upload image
+* download
 
 ### Function description
+Decribe your bouns function and how to use it.
 
-    Decribe your bouns function and how to use it.
+* dash line
+* solid line
+* rainbow pen
+
 
 ### Gitlab page link
 
     https://108062108.gitlab.io/AS_01_WebCanvas/
 
+### Others (Optional)
+
+    Anythinh you want to say to TAs.
 
 <style>
 table th{
