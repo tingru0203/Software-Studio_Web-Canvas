@@ -35,11 +35,8 @@
 
 ### Gitlab page link
 
-    [https://108062108.gitlab.io/AS_01_WebCanvas/] (https://108062108.gitlab.io/AS_01_WebCanvas/)
+    https://108062108.gitlab.io/AS_01_WebCanvas/
 
-### Others (Optional)
-
-    Anythinh you want to say to TAs.
 
 <style>
 table th{
