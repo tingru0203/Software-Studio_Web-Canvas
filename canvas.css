@@ -28,8 +28,8 @@ body {
     text-align: center;
 }
 
-.btn {
-    width: 120px;
+.myBtn {
+    width: 40px;
     height: 40px;
     background: #757575;
     color: white;
@@ -37,13 +37,20 @@ body {
     border-radius: 10%;
     box-shadow: none;
     border: 0;	
-    margin: 5px;		
+    margin: 6px;		
 }
 
-.btn:hover {
+.myBtn:hover {
+    background: black;
+}
+
+.myBtn:active {
+    background: blue;
+}
+/*.btn:hover {
     background: #dddddd;
     color: #FFFFFF;
-}
+}*/
   
 /* The slider itself */
 .slider {
