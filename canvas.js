@@ -9,10 +9,10 @@ var hue = 0;
 
 /* pen: 1, eraser: 2, text: 3, 
     rectangle:4, triangle: 5, circle: 6,
-    rainbow pen: 7, line: 8 */
+    rainbow pen: 7, line: 8, hexagon: 9, paint canvas:10 */
 let id = ["pen", "eraser", "text", "rectangle", "rectangle-fill",
         "triangle", "triangle-fill", "circle", "circle-fill", 
-        "rainbow", "line", "dash-line", "hexagon", "hexagon-fill"];
+        "rainbow", "line", "dash-line", "hexagon", "hexagon-fill", "paint"];
 let myfunc = 0;
 
 /* init */
@@ -68,12 +68,15 @@ function mousedown(event) {
         case 5: //triangle
         case 6: //circle
         case 8: //line
-        case 9:
+        case 9: //hexagon
             [last_mouseX, last_mouseY] = [mouseX, mouseY];
             [mouseX, mouseY] = [event.offsetX, event.offsetY];
             down = true;
 
             last_shape = canvas.toDataURL();
+            break;
+        case 10: //change canvas color
+            canvas.style.background = context.strokeStyle;
             break;
     }
 }
@@ -196,8 +199,8 @@ function mousemove(event) {
                     context.clearRect(0, 0, canvas.width, canvas.height);
                     context.drawImage(canvaspic, 0, 0);
                     // draw
-                    var S = (mouseY-last_mouseY)/4;
-                    var L = S*Math.sqrt(3);
+                    var S = (mouseY-last_mouseY)/4; // length*(1/2)
+                    var L = S*Math.sqrt(3); // length*(sqrt(3)/2)
                     context.beginPath();
                     context.moveTo(last_mouseX, last_mouseY);
                     context.lineTo(last_mouseX+L, last_mouseY+S);
@@ -210,7 +213,6 @@ function mousemove(event) {
                     else context.stroke();
                 }
             }
-
             break;
     }
 }
@@ -319,6 +321,13 @@ function hexagon(f) {
     }
 }
 
+function paint() {
+    canvas.style.cursor = "url(./image/canvas.svg) 0 16, auto";
+    penColor();
+    myfunc = 10;
+    func_change("paint");
+}
+
 function Size() {
     var slider = document.getElementById("myRange");
     context.lineWidth = slider.value/10;
@@ -335,12 +344,11 @@ function save() {
     if (step < history.length) 
         history.length = step;
     history.push(canvas.toDataURL());
-    console.log("save "+step);
 }
 
 function undo() {
     if (step > 0) {
-        step--;
+        step--; //last step
         let canvaspic = new Image();
         canvaspic.src = history[step];
         canvaspic.onload = function() {
@@ -352,7 +360,7 @@ function undo() {
 
 function redo() {
     if (step < history.length - 1) {
-        step++;
+        step++; //next step
         const canvaspic = new Image(); 
         canvaspic.src = history[step]; 
         canvaspic.onload = function() {
@@ -365,7 +373,7 @@ function redo() {
 function Download() {
     var DL = document.createElement('a');
     DL.href = canvas.toDataURL('image/png');;
-    DL.download = "img.png";
+    DL.download = "img.png"; //image's name
     DL.click();
 }
 
@@ -402,15 +410,16 @@ function func_change(changeId) {
         else
             context.setLineDash([]);
 
+        // button change
         if (id[i] == changeId){ //select
-            func.style['border'] = "black 3px solid";
-            func.style['background'] = "rgb(185, 185, 185)";
-            func.style['color'] = "rgb(54, 54, 54)";
+            func.style.border = "black 3px solid";
+            func.style.background = "rgb(185, 185, 185)";
+            func.style.color = "rgb(54, 54, 54)";
         }
         else{ //origin
-            func.style['border'] = "none";
-            func.style['background'] = "#757575";
-            func.style['color'] = "white";
+            func.style.border = "none";
+            func.style.background = "#757575";
+            func.style.color = "white";
         }
     }
 }
