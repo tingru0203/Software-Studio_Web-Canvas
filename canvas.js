@@ -9,10 +9,10 @@ var hue = 0;
 
 /* pen: 1, eraser: 2, text: 3, 
     rectangle:4, triangle: 5, circle: 6,
-    rainbow pen: 7, line: 8, hexagon: 9, paint canvas:10 */
+    rainbow pen: 7, line: 8, hexagon: 9, spray gun:10 */
 let id = ["pen", "eraser", "text", "rectangle", "rectangle-fill",
         "triangle", "triangle-fill", "circle", "circle-fill", 
-        "rainbow", "line", "dash-line", "hexagon", "hexagon-fill", "paint"];
+        "rainbow", "line", "dash-line", "hexagon", "hexagon-fill", "spray"];
 let myfunc = 0;
 
 /* init */
@@ -61,7 +61,7 @@ function mousedown(event) {
 
                 var textValue = textarea.value;
                 left.removeChild(textarea);
-                context.fillText(textValue, textX, textY+size/2);    
+                context.fillText(textValue, textX, textY+size*1.2);    
             } 
             break;
         case 4: //rectangle
@@ -76,7 +76,10 @@ function mousedown(event) {
             last_shape = canvas.toDataURL();
             break;
         case 10: //change canvas color
-            canvas.style.background = context.strokeStyle;
+            [last_mouseX, last_mouseY] = [mouseX, mouseY];
+            [mouseX, mouseY] = [event.offsetX, event.offsetY];
+            down = true;
+
             break;
     }
 }
@@ -214,6 +217,20 @@ function mousemove(event) {
                 }
             }
             break;
+        case 10:
+            [last_mouseX, last_mouseY] = [mouseX, mouseY];
+            [mouseX, mouseY] = [event.offsetX, event.offsetY];
+
+            if(down) {
+                for(i = 0; i < 5; i++) {
+                    context.beginPath();
+                    var rangeX = (Math.random()-0.5)*context.lineWidth*2;
+                    var rangeY = (Math.random()-0.5)*context.lineWidth*2;
+                    context.arc(event.offsetX+rangeX, event.offsetY+rangeY, 0.5, 0, 2 * Math.PI);
+                    context.fill();
+                }
+            }
+            break;
     }
 }
 
@@ -321,11 +338,11 @@ function hexagon(f) {
     }
 }
 
-function paint() {
-    canvas.style.cursor = "url(./image/canvas.svg) 0 16, auto";
+function spray() {
+    canvas.style.cursor = "url(./image/spray.svg) 0 16, auto";
     penColor();
     myfunc = 10;
-    func_change("paint");
+    func_change("spray");
 }
 
 function Size() {
@@ -394,6 +411,7 @@ function Upload(th) {
 function Clean() {
     step = -1;
     history = [];
+    canvas.style.background = "white";
     context.clearRect(0, 0, canvas.width, canvas.height);
 }
 
