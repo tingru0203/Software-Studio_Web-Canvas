@@ -20,8 +20,11 @@
 
 | **Other useful widgets**                         | **Score** | **Check** |
 | :----------------------------------------------- | :-------: | :-------: |
-| Name of widgets                                  | 1~5%     | N         |
-
+| Dash line                                        | 1~5%      | Y         |
+| Line                                             |           | Y         |
+| Hexagon (hollow/fill)                            |           | Y         |
+| Rainbow pen                                      |           | Y         |
+| Spray gun                                        |           | Y         |
 
 ---
 
@@ -67,16 +70,10 @@ Decribe your bouns function and how to use it.
 
 ![](./image/rainbow.svg) **rainbow pen**: 彩虹筆，畫圖時更改筆刷顏色
 
-**spray gun**: 噴槍效果
+![](./image/spray.svg) **spray gun**: 噴槍效果
 
-![](./image/hexagon.svg) ![](./image/hexagon-fill.svg) hexagon (hollow/fill): 畫空心或實心六邊形
+![](./image/hexagon.svg) ![](./image/hexagon-fill.svg) **hexagon (hollow/fill)**: 畫空心或實心六邊形
 
 ### Gitlab page link
 
-    https://108062108.gitlab.io/AS_01_WebCanvas/
-
-### Others (Optional)
-
-    Anythinh you want to say to TAs.
-
-
+[https://108062108.gitlab.io/AS_01_WebCanvas/](https://108062108.gitlab.io/AS_01_WebCanvas/)
