@@ -29,7 +29,7 @@
 ---
 
 ### How to use 
-以下介紹每個按鈕的效果
+以下介紹每個按鈕的功能
 
 <img src="image_for_md/size.png" width=13% /> 調整筆刷、擦布大小
 
