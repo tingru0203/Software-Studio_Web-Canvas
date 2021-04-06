@@ -87,7 +87,6 @@ function mousedown(event) {
 function mousemove(event) {
     switch(myfunc) {
         case 1: //pen
-        case 2: //eraser
             [last_mouseX, last_mouseY] = [mouseX, mouseY];
             [mouseX, mouseY] = [event.offsetX, event.offsetY];
 
@@ -96,6 +95,19 @@ function mousemove(event) {
                 context.moveTo(last_mouseX, last_mouseY);
                 context.lineTo(mouseX, mouseY);
                 context.stroke();
+            }
+            break;
+        case 2: //eraser
+            [last_mouseX, last_mouseY] = [mouseX, mouseY];
+            [mouseX, mouseY] = [event.offsetX, event.offsetY];
+
+            if(down) {
+                context.globalCompositeOperation = "destination-out";
+                context.beginPath();
+                context.moveTo(last_mouseX, last_mouseY);
+                context.lineTo(mouseX, mouseY);
+                context.stroke();
+                context.globalCompositeOperation = "source-over";
             }
             break;
         case 4: //rectangle
@@ -418,10 +430,6 @@ function Clean() {
 function func_change(changeId) {
     for (i = 0; i < id.length; i++) {
         var func = document.getElementById(id[i]);
-        if(changeId == "eraser")
-            context.globalCompositeOperation = "destination-out";
-        else
-            context.globalCompositeOperation = "source-over";
 
         if(changeId == "dash-line")
             context.setLineDash([10, 10]);
